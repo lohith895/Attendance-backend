@@ -1,8 +1,9 @@
 fastapi
 uvicorn
+gunicorn
 python-dotenv
 numpy
-opencv-python
+opencv-python-headless
 onnxruntime
 ultralytics
 scikit-learn
