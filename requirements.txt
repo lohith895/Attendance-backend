@@ -11,3 +11,4 @@ supabase
 python-jose
 requests
 insightface
+twilio

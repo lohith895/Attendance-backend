@@ -10,7 +10,7 @@ import numpy as np
 router = APIRouter(prefix="/api")
 
 @router.post("/face-training")
-def single_training(payload: dict, user=Depends(verify_token)):
+def single_training(payload: dict):
     student_id = payload["student_id"]
     images = payload["images"]
 

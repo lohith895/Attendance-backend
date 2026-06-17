@@ -1,15 +1,18 @@
+import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.routes import health, training, recognition, model
 
 app = FastAPI(title="AI Face Attendance Backend")
 
-# ✅ CORS FIX (VERY IMPORTANT)
+# ✅ CORS FIX
+ALLOWED_ORIGINS = os.getenv("ALLOWED_ORIGINS", "*").split(",")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # for development
+    allow_origins=ALLOWED_ORIGINS,
     allow_credentials=True,
-    allow_methods=["*"],  # allows OPTIONS
+    allow_methods=["*"],
     allow_headers=["*"],
 )
 

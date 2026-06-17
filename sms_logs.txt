@@ -1,0 +1,5 @@
+=== WhatsApp Alert (Simulated) ===
+From (Teacher): +91 99999 99999
+To (Parent): +8639463886
+Message: Dear Parent, Aneesh  was marked ABSENT for MERN (ME101) today. - Sender: Professor (WhatsApp: +91 99999 99999)
+==================================
