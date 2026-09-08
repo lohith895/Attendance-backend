@@ -1,217 +1,215 @@
-# ⚡ Smart Attendance — AI-Powered Facial Recognition Frontend
+# 🚀 AI Face Attendance Backend API
 
-<div align="center">
-
-[![React](https://img.shields.io/badge/React-18.3.1-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://reactjs.org/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.8.3-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![Vite](https://img.shields.io/badge/Vite-5.4.19-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4.17-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
-[![shadcn/ui](https://img.shields.io/badge/shadcn%2Fui-Radix_Primitives-000000?style=for-the-badge&logo=radix-ui&logoColor=white)](https://ui.shadcn.com/)
-[![Supabase](https://img.shields.io/badge/Supabase-Auth_%26_PostgreSQL-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)](https://supabase.com/)
-
-<br/>
-
-**A next-generation automated attendance and classroom management interface powered by real-time computer vision, deep facial embeddings, and instant WhatsApp parent notifications.**
-
-[Key Features](#-key-features) • [Tech Stack](#-technology-stack) • [Quick Start](#-quick-start) • [Environment Config](#-environment-variables) • [Route & Role Matrix](#-application-routes--role-matrix) • [Architecture](#-architecture--directory-structure)
-
-</div>
+An AI-powered backend service for the Automated Attendance Management System built with **FastAPI**, **InsightFace**, **YOLOv8**, and **Supabase**. This service handles face detection, feature extraction, liveness anti-spoofing checks, identity matching, student face embedding training, and WhatsApp notification alerts for absences.
 
 ---
 
-## 🌟 Key Features
+## 📋 Table of Contents
 
-### 👁️ Real-Time Face Recognition Attendance
-* **Live Camera Stream Processing**: Scans classroom video streams in real-time, detecting multi-face bounding boxes and identities instantly.
-* **Cropped Face Pipeline**: Sends detected face crops to the InsightFace AI backend for low-latency embedding matching.
-* **Liveness & Anti-Spoofing Detection**: Highlights recognized students in vibrant green boxes while flagging spoof or unregistered faces.
-* **Manual Override**: Quick-toggle manual marking in case of lighting anomalies or partial face occlusion.
-
-### 🎭 Strict Role-Based Access Control (RBAC)
-* **Admin Role**: Full system configuration, department management, course/subject catalog, teacher onboarding, student roster oversight, and global system metrics.
-* **Teacher Role**: Class timetable scheduling, taking live attendance, single/bulk student face registration, section model retraining, and exportable analytics.
-* **Student Role**: Dedicated self-signup portal, personal attendance percentage tracking, subject-wise attendance breakdown, and low attendance warning alerts.
-
-### 📸 Face Enrollment & AI Model Training
-* **Interactive Face Capture**: Multi-angle camera capture tool guiding students through face positioning.
-* **Bulk Dataset Ingestion**: Upload ZIP archives / CSV spreadsheets containing student photos with automatic serial matching and batch embedding vectorization.
-* **Section-Wise Model Training**: On-demand retraining triggers to optimize nearest-neighbor vector indexes for individual classroom sections.
-
-### 📊 Rich Analytics & Automated Alerts
-* **Interactive Dashboards**: Interactive charts using Recharts displaying attendance trends, subject performance, and semester-level statistics.
-* **Defaulter Identification**: Instantly identifies students falling below institutional attendance thresholds (e.g. 75%).
-* **WhatsApp Notification Engine**: Dispatches automated absence alerts directly to parent and teacher phone numbers.
+- [Features](#-features)
+- [Tech Stack](#-tech-stack)
+- [Project Architecture](#-project-architecture)
+- [Directory Structure](#-directory-structure)
+- [Environment Variables](#-environment-variables)
+- [Installation & Setup](#-installation--setup)
+- [Running the Server](#-running-the-server)
+- [API Documentation](#-api-documentation)
+- [Anti-Spoofing & Liveness Mechanism](#-anti-spoofing--liveness-mechanism)
 
 ---
 
-## 🛠️ Technology Stack
+## ✨ Features
 
-| Layer | Technologies |
-| :--- | :--- |
-| **Framework & Core** | [React 18](https://react.dev/), [TypeScript](https://www.typescriptlang.org/), [Vite](https://vitejs.dev/) (SWC compiler) |
-| **UI & Styling** | [Tailwind CSS](https://tailwindcss.com/), [shadcn/ui](https://ui.shadcn.com/), [Radix UI](https://www.radix-ui.com/), [Lucide Icons](https://lucide.dev/) |
-| **State & Data Fetching** | [@tanstack/react-query](https://tanstack.com/query/latest) (TanStack Query v5), React Context |
-| **Animation & UX** | [Framer Motion](https://www.framer.com/motion/), [Sonner](https://sonner.emilkowal.ski/) (Toasts), [Vaul](https://vaul.emilkowal.ski/) |
-| **Forms & Validation** | [React Hook Form](https://react-hook-form.com/), [Zod](https://zod.dev/) |
-| **Visualization** | [Recharts](https://recharts.org/), [date-fns](https://date-fns.org/) |
-| **Backend / BaaS Integration** | [Supabase Client (`@supabase/supabase-js`)](https://supabase.com/docs), FastAPI REST Backend (InsightFace) |
-| **Testing & Quality** | [Vitest](https://vitest.dev/), [@testing-library/react](https://testing-library.com/), [Playwright](https://playwright.dev/), [ESLint 9](https://eslint.org/) |
+- 👤 **Single & Bulk Face Training**: Extracts facial embeddings using InsightFace (`buffalo_l`) and averages them across samples to store per student in Supabase.
+- 🎯 **Face Recognition & Matching**: Computes cosine similarity between detected input faces and enrolled student face embeddings.
+- 🛡️ **Liveness Detection & Anti-Spoofing**: Filters out photo/screen spoof attempts using Laplacian variance quality analysis and specular glare detection thresholds.
+- 🔍 **YOLOv8 Face Detection**: Uses `yolov8n-face.pt` as a lightweight gatekeeper for single-face enrollment verification.
+- 🔐 **Supabase JWT Authentication**: Validates requests via Supabase Auth Bearer tokens.
+- 📱 **WhatsApp Alert Integration**: Sends automated absence notifications to parents via Twilio WhatsApp API (with automatic fallback to simulated logging).
 
 ---
 
-## 🚀 Quick Start
+## 🛠️ Tech Stack
 
-### 1. Prerequisites
-Ensure you have the following installed on your machine:
-* [Node.js](https://nodejs.org/) (version **18.x** or higher recommended)
-* [npm](https://www.npmjs.com/) or [Bun](https://bun.sh/)
-* *(Optional)* FastAPI Backend service running on `http://localhost:8000`
+- **Framework**: [FastAPI](https://fastapi.tiangolo.com/) + [Uvicorn](https://www.uvicorn.org/) / [Gunicorn](https://gunicorn.org/)
+- **Computer Vision & AI**:
+  - [InsightFace](https://github.com/deepinsight/insightface) (`buffalo_l` model)
+  - [Ultralytics YOLOv8](https://docs.ultralytics.com/) (`yolov8n-face.pt`)
+  - [OpenCV](https://opencv.org/) (`opencv-python-headless`)
+  - [Scikit-Learn](https://scikit-learn.org/) (Cosine Similarity calculation)
+- **Database & Auth**: [Supabase Python SDK](https://supabase.com/docs/reference/python/initializing)
+- **Messaging**: [Twilio REST API](https://www.twilio.com/docs/whatsapp)
+- **Environment Management**: `python-dotenv`, `certifi`
 
-### 2. Installation
-Navigate to the `attendance_frontend` directory and install project dependencies:
+---
 
-```bash
-cd attendance_frontend
-npm install
+## 📁 Directory Structure
+
+```
+Attendance_backend/
+├── app/
+│   ├── ai/
+│   │   ├── detector.py       # YOLOv8 face detection gatekeeper
+│   │   ├── quality.py        # Laplacian variance & glare liveness checks
+│   │   └── recognizer.py     # InsightFace embedding generator & face analysis
+│   ├── routes/
+│   │   ├── health.py         # Health check endpoint
+│   │   ├── model.py          # Section model status & manual training endpoints
+│   │   ├── recognition.py   # Main face recognition & WhatsApp alert endpoints
+│   │   └── training.py      # Face enrollment (single & bulk training) endpoints
+│   ├── utils/
+│   │   ├── image.py          # Base64 image decode helper
+│   │   └── sms.py            # Twilio WhatsApp messaging & simulation logger
+│   ├── auth.py               # Supabase token verification middleware
+│   ├── config.py             # Environment configuration variables
+│   ├── database.py           # Supabase client instantiation
+│   └── main.py               # FastAPI application initialization & CORS config
+├── .env                      # Environment configuration file (secrets)
+├── package.json              # Supabase JS dependency definitions
+├── requirements.txt          # Python dependency list
+├── yolov8n-face.pt           # Pre-trained YOLOv8 face detection weights
+└── README.md                 # Project documentation
 ```
 
-### 3. Environment Configuration
-Create a `.env` file in the `attendance_frontend` root directory:
+---
+
+## ⚙️ Environment Variables
+
+Create a `.env` file in the root directory (`Attendance_backend/.env`) with the following settings:
 
 ```env
 # Supabase Configuration
-VITE_SUPABASE_URL="https://your-project.supabase.co"
-VITE_SUPABASE_PUBLISHABLE_KEY="your-supabase-publishable-key"
+SUPABASE_URL=https://<your-project-id>.supabase.co
+SUPABASE_ANON_KEY=<your-supabase-anon-key>
+SUPABASE_KEY=<your-supabase-service-role-key>
 
-# Python AI / Face Recognition Backend URL
-VITE_FACE_API_URL="http://localhost:8000"
+# Face Matching Threshold (0.0 to 1.0)
+FACE_SIMILARITY_THRESHOLD=0.7
+
+# CORS Allowed Origins (comma-separated or * for development)
+ALLOWED_ORIGINS=*
+
+# Twilio WhatsApp API Credentials (Optional - Falls back to sms_logs.txt simulation if omitted)
+TWILIO_ACCOUNT_SID=your_twilio_account_sid
+TWILIO_AUTH_TOKEN=your_twilio_auth_token
 ```
 
-### 4. Run Development Server
-Start the local Vite dev server with hot module replacement (HMR):
+---
+
+## 📥 Installation & Setup
+
+### Prerequisites
+
+- Python 3.9+ installed
+- Git installed
+- C++ Build Tools (required by InsightFace / ONNX runtime dependencies on Windows)
+
+### Step-by-Step Installation
+
+1. **Clone or Navigate to the Backend Project**:
+   ```bash
+   cd Attendance_backend
+   ```
+
+2. **Create and Activate Virtual Environment**:
+   - **Windows**:
+     ```bash
+     python -m venv venv
+     venv\Scripts\activate
+     ```
+   - **Linux / macOS**:
+     ```bash
+     python3 -m venv venv
+     source venv/bin/activate
+     ```
+
+3. **Install Dependencies**:
+   ```bash
+   pip install --upgrade pip
+   pip install -r requirements.txt
+   ```
+
+4. **Verify Weight Files**:
+   Ensure `yolov8n-face.pt` is present in the `Attendance_backend/` root directory.
+
+---
+
+## 🚀 Running the Server
+
+### Development Mode (with Hot Reloading)
 
 ```bash
-npm run dev
+uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
-The application will be live at: **`http://localhost:5173`** (or your designated Vite port).
+### Production Mode
 
----
+Using Gunicorn with Uvicorn workers:
 
-## 🔐 Demo Credentials
-
-Use the pre-configured accounts below for quick local testing:
-
-| Role | Email | Password | Primary Purpose |
-| :--- | :--- | :--- | :--- |
-| 🛡️ **Admin** | `admin@gmail.com` | `12345678` | Manage Departments, Subjects, Faculty & Global Settings |
-| 👨‍🏫 **Teacher** | `tennetiparameshwar@gmail.com` | `12345678` | Conduct Face Attendance, Model Training & Classes |
-| 🎓 **Student** | *(Self-Signup via `/signup`)* | — | View Personal Attendance & Profile Statistics |
-
----
-
-## 🗺️ Application Routes & Role Matrix
-
-| Route | Component | Access Level | Description |
-| :--- | :--- | :--- | :--- |
-| `/` | `Index.tsx` | Public | Landing / Welcome page |
-| `/login` | `Login.tsx` | Public (Unauthenticated) | Role-aware secure login portal |
-| `/signup` | `StudentSignup.tsx` | Public (Unauthenticated) | Student onboarding and self-registration |
-| `/dashboard` | `Dashboard.tsx` | 🛡️ Admin / 👨‍🏫 Teacher | Main command center & quick actions |
-| `/departments` | `Departments.tsx` | 🛡️ Admin only | Academic departments directory & CRUD |
-| `/subjects` | `Subjects.tsx` | 🛡️ Admin only | Curriculum and course catalog management |
-| `/teachers` | `Teachers.tsx` | 🛡️ Admin only | Faculty management & subject allocation |
-| `/students` | `Students.tsx` | 🛡️ Admin / 👨‍🏫 Teacher | Complete student roster with status filters |
-| `/register-student` | `RegisterStudent.tsx` | 🛡️ Admin / 👨‍🏫 Teacher | Single student enrollment with face capture |
-| `/face-training` | `FaceTraining.tsx` | 👨‍🏫 Teacher only | Live multi-angle student face model training |
-| `/bulk-upload` | `BulkUpload.tsx` | 👨‍🏫 Teacher only | Batch ZIP/CSV photo dataset enrollment |
-| `/classes` | `Classes.tsx` | 🛡️ Admin / 👨‍🏫 Teacher | Section timetables & classroom schedules |
-| `/attendance` | `TakeAttendance.tsx` | 👨‍🏫 Teacher only | AI real-time facial recognition attendance camera |
-| `/analytics` | `Analytics.tsx` | 🛡️ Admin / 👨‍🏫 Teacher | Visual attendance metrics, defaulters & reports |
-| `/settings` | `Settings.tsx` | 🛡️ Admin only | System configurations, API parameters & thresholds |
-| `/student-dashboard` | `StudentDashboard.tsx` | 🎓 Student only | Student portal: attendance %, logs & alerts |
-
----
-
-## 🏗️ Architecture & Directory Structure
-
-```text
-attendance_frontend/
-├── public/                 # Static assets & icons
-├── src/
-│   ├── components/         # Modular React UI components
-│   │   ├── layout/         # Header, Sidebar, Dashboard Layouts
-│   │   ├── student/        # Student subject mapping & cards
-│   │   └── ui/             # Radix + Tailwind primitive components (shadcn)
-│   ├── contexts/           # Global React Contexts (AuthContext, etc.)
-│   ├── hooks/              # Reusable custom React hooks
-│   ├── integrations/       # External service SDKs (Supabase client & schemas)
-│   ├── lib/                # Utility helpers & formatting tools (utils.ts)
-│   ├── pages/              # Routed view pages (Admin, Teacher, Student)
-│   ├── services/           # API communication layer
-│   │   ├── faceRecognitionApi.ts  # Face training, crops recognition & WhatsApp API
-│   │   ├── notificationService.ts # Real-time alerts & notification dispatch
-│   │   └── teacherAdminService.ts # Administration queries & role management
-│   ├── test/               # Unit & integration test suites
-│   ├── App.tsx             # Root router with RBAC guard wrappers
-│   ├── index.css           # Design tokens, CSS variables & glassmorphism styles
-│   └── main.tsx            # Application entrypoint & DOM mount
-├── .env                    # Local environment variables
-├── package.json            # Scripts & project dependencies
-├── tailwind.config.ts      # Tailwind design tokens, colors & animations
-├── tsconfig.json           # TypeScript configuration
-├── vite.config.ts          # Vite build config & path alias aliases (`@/*`)
-└── vitest.config.ts        # Vitest unit test runner config
-```
-
----
-
-## 📜 Available NPM Scripts
-
-| Script | Command | Purpose |
-| :--- | :--- | :--- |
-| `dev` | `npm run dev` | Runs the local development server at `http://localhost:5173` |
-| `build` | `npm run build` | Compiles TypeScript and builds production distribution in `dist/` |
-| `build:dev` | `npm run build:dev` | Builds the project using development mode configuration |
-| `preview` | `npm run preview` | Locally serves the compiled production build |
-| `lint` | `npm run lint` | Runs ESLint 9 across all `.ts`, `.tsx`, and `.js` files |
-| `test` | `npm run test` | Executes unit tests with Vitest |
-| `test:watch` | `npm run test:watch` | Runs Vitest in interactive watch mode |
-
----
-
-## 🧪 Testing
-
-### Unit Testing with Vitest
 ```bash
-# Run unit tests once
-npm run test
-
-# Run unit tests with file watcher
-npm run test:watch
+gunicorn -w 4 -k uvicorn.workers.UvicornWorker app.main:app --bind 0.0.0.0:8000
 ```
 
-### End-to-End Testing with Playwright
-```bash
-# Run Playwright E2E tests
-npx playwright test
-
-# Run Playwright tests with UI mode
-npx playwright test --ui
-```
+Once running, interactive API docs will be available at:
+- **Swagger UI**: `http://localhost:8000/docs`
+- **ReDoc**: `http://localhost:8000/redoc`
 
 ---
 
-## 🤝 Contributing
+## 🔌 API Endpoints Summary
 
-1. **Fork** the repository.
-2. Create a feature branch: `git checkout -b feature/amazing-feature`.
-3. Commit your changes: `git commit -m "feat: add amazing feature"`.
-4. Push to the branch: `git push origin feature/amazing-feature`.
-5. Open a **Pull Request**.
+### 1. Health Check
+- `GET /health`
+  - **Response**: `{"status": "ok", "version": "1.0.0"}`
+
+### 2. Face Training & Enrollment
+- `POST /api/face-training` (Single Student Training)
+  - **Payload**: `{"student_id": "UUID", "images": ["base64_string", ...]}`
+  - **Description**: Extracts embeddings for single image face submission and registers face in Supabase.
+- `POST /api/face-training/bulk` (Bulk Student Training)
+  - **Auth**: `Bearer <token>`
+  - **Payload**: `{"students": [...], "images": {"1": "base64_string", ...}}`
+
+### 3. Face Recognition & Attendance
+- `POST /api/face-recognition` (Full Frame Recognition)
+  - **Auth**: `Bearer <token>`
+  - **Payload**: `{"image": "base64_string", "section_id": "UUID"}`
+  - **Returns**: Recognized student list with bounding boxes and confidence scores + Spoof/Unrecognized list.
+- `POST /api/face-recognition/crops` (Cropped Face Array Recognition)
+  - **Auth**: `Bearer <token>`
+  - **Payload**: `{"section_id": "UUID", "crops": [{"image": "base64_string", "bounding_box": {...}}]}`
+
+### 4. WhatsApp Absence Alerts
+- `POST /api/alerts/whatsapp`
+  - **Auth**: `Bearer <token>`
+  - **Payload**:
+    ```json
+    {
+      "teacher_phone": "+919999999999",
+      "parent_phone": "+918888888888",
+      "student_name": "John Doe",
+      "subject_name": "Mathematics",
+      "subject_code": "MATH101"
+    }
+    ```
+  - **Description**: Sends WhatsApp alert via Twilio or appends record to `sms_logs.txt` if in simulation mode.
+
+### 5. Section Model Status
+- `GET /api/model/status/{section_id}`
+  - **Auth**: `Bearer <token>`
+- `POST /api/model/train`
+  - **Auth**: `Bearer <token>`
 
 ---
 
-<div align="center">
-  <sub>Built with ❤️ for educational institutions seeking seamless, high-accuracy attendance automation.</sub>
-</div>
+## 🛡️ Anti-Spoofing & Liveness Mechanism
+
+The quality module (`app/ai/quality.py`) inspects cropped facial region pixels using:
+1. **Laplacian Blur / Texture Check**: Computes image variance. Values `< 20.0` (blurred photo prints) or `> 5000.0` (digital screen grid / moiré patterns) flag spoof attempts.
+2. **Specular Reflection / Glare Detection**: Measures high-intensity pixel ratio (`> 245` grayscale value). If glare percentage exceeds `20%`, it flags a screen reflection or photo print glare spoof attempt.
+
+---
+
+## 📄 License
+
+This project is created for the Automated AI Face Attendance System. All rights reserved.
